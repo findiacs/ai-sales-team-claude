@@ -171,6 +171,10 @@ INDUSTRY_KEYWORDS = {
     "HRTech": ["hr tech", "human resources", "recruiting", "talent"],
 }
 
+# Compiled regex patterns for performance
+EMAIL_PATTERN = re.compile(r'[\w.+-]+@[\w-]+\.[\w.-]+')
+PHONE_PATTERN = re.compile(r'(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}')
+
 
 def extract_company_name(parsed):
     """Extract company name from multiple sources."""
@@ -300,8 +304,8 @@ def detect_job_postings(html):
 
 def extract_contact_info(html):
     """Extract contact email and phone from page."""
-    emails = re.findall(r'[\w.+-]+@[\w-]+\.[\w.-]+', html)
-    phones = re.findall(r'(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}', html)
+    emails = EMAIL_PATTERN.findall(html)
+    phones = PHONE_PATTERN.findall(html)
     filtered_emails = [e for e in emails if not e.endswith((".png", ".jpg", ".svg", ".gif"))]
     return {
         "emails": list(set(filtered_emails))[:5],
