@@ -372,7 +372,7 @@ def analyze(url):
     result["contact_info"] = extract_contact_info(html)
     result["company_size_signals"] = estimate_company_size(html)
 
-    all_html = html
+    all_html_parts = [html]
 
     # Fetch subpages
     for path in SUBPAGES:
@@ -380,7 +380,7 @@ def analyze(url):
         sub_status, sub_html = fetch_url(sub_url, timeout=8)
         if sub_status == 200 and sub_html:
             result["pages_analyzed"].append(sub_url)
-            all_html += sub_html
+            all_html_parts.append(sub_html)
 
             if "team" in path or "about" in path or "leadership" in path:
                 members = extract_team_members(sub_html)
@@ -395,6 +395,7 @@ def analyze(url):
                 result["contact_info"]["phones"] = list(set(result["contact_info"]["phones"] + contact["phones"]))
 
     # Merge social links from all pages
+    all_html = "".join(all_html_parts)
     extra_social = extract_social_links(all_html)
     for platform, urls in extra_social.items():
         if platform not in result["social_links"]:
