@@ -100,9 +100,11 @@ class TagCollector(HTMLParser):
 
 def fetch_url(url, timeout=10):
     """Fetch a URL and return (status_code, html_string). Returns (None, None) on failure."""
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        return None, None
+
     ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
     headers = {"User-Agent": "Mozilla/5.0 (compatible; ProspectAnalyzer/1.0)"}
     req = Request(url, headers=headers)
     try:
