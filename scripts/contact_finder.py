@@ -56,13 +56,31 @@ DEPARTMENT_MAP = {
 }
 
 BUYING_ROLES = {
-    "Economic Buyer": ["ceo", "cfo", "coo", "president", "founder", "managing director",
-                       "general manager", "partner", "owner"],
-    "Champion": ["vp", "vice president", "head of", "director", "senior director"],
+    "Blocker": ["legal", "counsel", "compliance", "procurement", "purchasing"],
+    "Economic Buyer": ["managing director", "ceo", "cfo", "coo", "chief", "president", "founder", "general manager", "partner", "owner"],
+    "Champion": ["vp", "vice president", "svp", "evp", "head of", "director", "senior director"],
     "Evaluator": ["manager", "senior manager", "team lead", "lead", "principal"],
     "End User": ["engineer", "analyst", "specialist", "developer", "designer"],
-    "Blocker": ["legal", "counsel", "compliance", "procurement", "purchasing"],
 }
+
+# Pre-compute sorted keywords for better performance and matching logic
+_BUYING_ROLE_KEYWORDS = sorted(
+    [(kw, role) for role, keywords in BUYING_ROLES.items() for kw in keywords],
+    key=lambda x: len(x[0]),
+    reverse=True
+)
+
+_SENIORITY_KEYWORDS = sorted(
+    [(kw, level) for level, keywords in SENIORITY_MAP.items() for kw in keywords],
+    key=lambda x: len(x[0]),
+    reverse=True
+)
+
+_DEPARTMENT_KEYWORDS = sorted(
+    [(kw, dept) for dept, keywords in DEPARTMENT_MAP.items() for kw in keywords],
+    key=lambda x: len(x[0]),
+    reverse=True
+)
 
 
 # ---------------------------------------------------------------------------
@@ -89,30 +107,27 @@ def fetch_url(url, timeout=10):
 def classify_seniority(title):
     """Classify a job title into a seniority level."""
     title_lower = title.lower()
-    for level, keywords in SENIORITY_MAP.items():
-        for kw in keywords:
-            if kw in title_lower:
-                return level
+    for kw, level in _SENIORITY_KEYWORDS:
+        if re.search(r'\b' + re.escape(kw) + r'\b', title_lower):
+            return level
     return "Unknown"
 
 
 def classify_department(title):
     """Classify a job title into a department."""
     title_lower = title.lower()
-    for dept, keywords in DEPARTMENT_MAP.items():
-        for kw in keywords:
-            if kw in title_lower:
-                return dept
+    for kw, dept in _DEPARTMENT_KEYWORDS:
+        if re.search(r'\b' + re.escape(kw) + r'\b', title_lower):
+            return dept
     return "Unknown"
 
 
 def predict_buying_role(title):
     """Predict a contact's buying role based on title."""
     title_lower = title.lower()
-    for role, keywords in BUYING_ROLES.items():
-        for kw in keywords:
-            if kw in title_lower:
-                return role
+    for kw, role in _BUYING_ROLE_KEYWORDS:
+        if re.search(r'\b' + re.escape(kw) + r'\b', title_lower):
+            return role
     return "Unknown"
 
 
