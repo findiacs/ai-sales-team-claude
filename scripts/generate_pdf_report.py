@@ -11,22 +11,19 @@ Usage:
 """
 
 import json
-import math
 import sys
-import os
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
+from reportlab.lib.enums import TA_LEFT, TA_CENTER
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
     PageBreak, KeepTogether
 )
-from reportlab.graphics.shapes import Drawing, Circle, String, Line, Rect, Wedge
+from reportlab.graphics.shapes import Drawing, Circle, String, Wedge
 from reportlab.graphics.charts.barcharts import HorizontalBarChart
-from reportlab.graphics import renderPDF
 
 # --- Color Palette (Sales-focused) ---
 PRIMARY = colors.HexColor("#1B2A4A")       # dark navy
